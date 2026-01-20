@@ -361,7 +361,7 @@ class SQLServerConnector(QMainWindow):
         destination_layout = QHBoxLayout(destination_group)
         destination_layout.setSpacing(12)
 
-        self.folder_path = os.path.join(os.path.expanduser("~"), "Exportacion_SQL")
+        self.folder_path = os.path.join(os.path.expanduser("Maestros TXT"))
         self.folder_entry = QLineEdit(self.folder_path)
         self.folder_entry.setReadOnly(True)
         destination_layout.addWidget(self.folder_entry)
@@ -1075,7 +1075,7 @@ ORDER BY CodigoProveedor ASC""",
             "FROM BanFormaPago WHERE Codigo IN ('FP01','FP02','FP03','FP04','FP05','FP06','FP07')",
         }
 
-        # Consultas RELACIONES (las nuevas)
+        # Consultas RELACIONES
         relaciones_queries = {
             "Artículos - Categorías": "SELECT CodigoArticulo, CodigoCategoria FROM InvArticulo JOIN InvCategoria on InvCategoria.Id = InvArticulo.InvCategoriaId",
             "Artículos - Códigos de Barras": """WITH CodigosBarrasLimpios AS (
@@ -1098,8 +1098,8 @@ WHERE FilaNum = 1""",
             "Artículos - Control Sanitario": "SELECT CodigoArticulo, InvControlSanitario.CodigoControl FROM InvArticulo JOIN InvControlSanitario on InvControlSanitario.Id = InvArticulo.InvControlSanitarioId",
             "Artículos - Marcas": "SELECT CodigoArticulo, Codigo FROM InvArticulo JOIN InvMarca on InvMarca.Id = InvArticulo.InvMarcaId",
             "Artículos - Principio Activo": "SELECT CodigoArticulo, InvComponente.Codigo FROM InvArticuloComponente JOIN InvArticulo on InvArticulo.Id = InvArticuloComponente.InvArticuloId JOIN InvComponente on InvComponente.Id = InvArticuloComponente.InvComponenteId",
-            "Artículos - Unidades de Medida": "SELECT CodigoArticulo, 'UN', 'UFF', CAST(FactorConversion as int), 'UN', 1 "
-            "FROM InvArticuloUnidad UN JOIN InvArticulo ART ON UN.InvArticuloId = ART.Id "
+            "Artículos - Unidades de Medida": "SELECT a.CodigoArticulo, um.Codigo, um.Codigo, CAST(au.FactorConversion as int), um.Codigo, CAST(au.FactorConversion as int) "
+            "FROM InvArticulo a JOIN InvArticuloUnidad au on au.InvArticuloId=a.Id JOIN InvUnidadMedida um on um.Id=au.InvUnidadMedidaId "
             "WHERE FactorConversion > 1",
             "Artículos - Usos": "SELECT CodigoArticulo, InvUso.Codigo FROM InvArticuloUso JOIN InvArticulo on InvArticulo.Id = InvArticuloUso.InvArticuloId JOIN InvUso on InvUso.Id = InvArticuloUso.InvUsoId",
             "Artículos - Impuesto": "SELECT ex.CodigoArticulo, CAST(MAX(ex.tarifaI) AS NUMERIC(10,2)) as TarifaCompra, CAST(MAX(ex.tarifaV) AS NUMERIC(10,2)) as TarifaVenta FROM ( SELECT a.CodigoArticulo, CASE WHEN MAX(fcv.TarifaImpuesto) IS NULL THEN 0 ELSE CAST(MAX(fcv.TarifaImpuesto) AS DECIMAL(10,2)) END as tarifaI, CASE WHEN MAX(fcv2.TarifaImpuesto) IS NULL THEN 0 ELSE CAST(MAX(fcv2.TarifaImpuesto) AS DECIMAL(10,2)) END as tarifaV FROM InvArticulo a LEFT JOIN FinConceptoVigencia fcv ON fcv.FinConceptoImptoId = a.FinConceptoImptoIdCompra LEFT JOIN FinConceptoVigencia fcv2 ON fcv2.FinConceptoImptoId = a.FinConceptoImptoIdVenta GROUP BY a.CodigoArticulo ) as ex GROUP BY ex.CodigoArticulo",
